@@ -92,38 +92,40 @@ namespace Sd_System.Controllers
         // POST: Tickets/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "Admin")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Status,CreatedDate,CreatedById")] Ticket ticket)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, Ticket ticket)
         {
             if (id != ticket.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var existingTicket = await _context.Tickets.FindAsync(id);
+            if (existingTicket == null)
             {
-                try
-                {
-                    _context.Update(ticket);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TicketExists(ticket.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            ViewData["CreatedById"] = new SelectList(_context.Users, "Id", "Id", ticket.CreatedById);
-            return View(ticket);
+
+            // Aktualizuj priorytet i termin
+            existingTicket.Priority = ticket.Priority;
+
+            if (existingTicket.Priority != TicketPriority.P5)
+            {
+                existingTicket.DueDate = existingTicket.CreatedDate.AddHours((int)existingTicket.Priority);
+            }
+            else
+            {
+                existingTicket.DueDate = null;
+            }
+
+            // Reszta pól
+            existingTicket.Title = ticket.Title;
+            existingTicket.Description = ticket.Description;
+            existingTicket.Status = ticket.Status;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Tickets/Delete/5

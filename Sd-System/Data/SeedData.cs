@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Sd_System.Models;
 
 namespace Sd_System.Data
@@ -7,34 +8,55 @@ namespace Sd_System.Data
     {
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            string[] roleNames = { "Admin", "User" };
-
-            // Utwórz role
-            foreach (var roleName in roleNames)
+            using (var scope = serviceProvider.CreateScope())
             {
-                if (!await roleManager.RoleExistsAsync(roleName))
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+                // Stwórz role "Admin" i "User", jeśli nie istnieją
+                string[] roles = { "Admin", "User" };
+                foreach (var role in roles)
                 {
-                    await roleManager.CreateAsync(new IdentityRole(roleName));
+                    if (!await roleManager.RoleExistsAsync(role))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                    }
                 }
-            }
 
-            // Utwórz admina
-            var adminEmail = "admin@example.com";
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
-            if (adminUser == null)
-            {
-                adminUser = new ApplicationUser
+                // Stwórz konto admina, jeśli nie istnieje
+                var adminEmail = "admin@example.com";
+                var adminUser = await userManager.FindByEmailAsync(adminEmail);
+                if (adminUser == null)
                 {
-                    UserName = adminEmail,
-                    Email = adminEmail,
-                    FirstName = "Admin",
-                    LastName = "System"
-                };
+                    adminUser = new ApplicationUser
+                    {
+                        UserName = adminEmail,
+                        Email = adminEmail,
+                        FirstName = "Admin",
+                        LastName = "System",
+                        EmailConfirmed = true // Pominięcie potwierdzenia email
+                    };
 
-                await userManager.CreateAsync(adminUser, "Admin123!");
-                await userManager.AddToRoleAsync(adminUser, "Admin");
+                    // Hasło musi spełniać wymagania (np. duże litery, cyfry)
+                    var result = await userManager.CreateAsync(adminUser, "Admin123!");
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(adminUser, "Admin");
+                    }
+                    else
+                    {
+                        // Logowanie błędów (np. do konsoli)
+                        Console.WriteLine("Błąd podczas tworzenia admina:");
+                        foreach (var error in result.Errors)
+                        {
+                            Console.WriteLine(error.Description);
+                        }
+                    }
+                }
+
+                // Zastosuj migracje (na wypadek, gdyby baza nie istniała)
+                await context.Database.MigrateAsync();
             }
         }
     }
