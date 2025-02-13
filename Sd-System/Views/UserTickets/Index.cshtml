@@ -1,21 +1,31 @@
 ﻿@model IEnumerable<Sd_System.Models.Ticket>
+
 @{
-    ViewData["Title"] = User.IsInRole("Admin") ? "Wszystkie zgłoszenia" : "Moje zgłoszenia";
+    ViewData["Title"] = "Moje Zgłoszenia";
 }
 
-<div class="container mt-4">
-    <h2>@ViewData["Title"]</h2>
+<h1>Moje Zgłoszenia</h1>
 
-    @if (User.IsInRole("Admin"))
-    {
-        <div class="alert alert-info mb-4">
-            <strong>Tryb administratora:</strong> Widzisz wszystkie zgłoszenia w systemie
-        </div>
-    }
-
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <!-- Reszta kodu pozostaje bez zmian -->
-        </table>
-    </div>
-</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tytuł</th>
+            <th>Opis</th>
+            <th>Status</th>
+            <th>Priorytet</th>
+            <th>Data utworzenia</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ticket in Model)
+        {
+            <tr>
+                <td>@ticket.Title</td>
+                <td>@ticket.Description</td>
+                <td>@ticket.Status</td>
+                <td>@ticket.Priority</td>
+                <td>@ticket.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+            </tr>
+        }
+    </tbody>
+</table>

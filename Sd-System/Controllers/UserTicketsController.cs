@@ -7,7 +7,7 @@ using Sd_System.Models;
 
 namespace Sd_System.Controllers
 {
-    [Authorize]
+    [Authorize] // Tylko zalogowani użytkownicy mogą korzystać z tego kontrolera
     public class UserTicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -17,6 +17,24 @@ namespace Sd_System.Controllers
             _context = context;
         }
 
+        // GET: UserTickets/Index
+        public async Task<IActionResult> Index()
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Pobierz ID zalogowanego użytkownika
+            var userTickets = await _context.Tickets
+                .Where(t => t.CreatedById == currentUserId) // Filtruj zgłoszenia tylko dla danego użytkownika
+                .ToListAsync();
+
+            return View(userTickets); // Przekaż listę zgłoszeń do widoku
+        }
+
+        // GET: UserTickets/Create
+        public IActionResult Create()
+        {
+            return View(); // Zwróć widok do tworzenia nowego zgłoszenia
+        }
+
+        // POST: UserTickets/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Description")] Ticket ticket)
@@ -25,14 +43,14 @@ namespace Sd_System.Controllers
             {
                 try
                 {
-                    ticket.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    ticket.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier); // Przypisz zgłoszenie do zalogowanego użytkownika
                     ticket.CreatedDate = DateTime.Now;
                     ticket.Status = TicketStatus.New;
                     ticket.Priority = TicketPriority.P5;
 
                     _context.Add(ticket);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index)); // Przekieruj do listy zgłoszeń po utworzeniu
                 }
                 catch (Exception ex)
                 {
@@ -46,7 +64,7 @@ namespace Sd_System.Controllers
                 Console.WriteLine($"Błąd modelu: {error.ErrorMessage}");
             }
 
-            return View(ticket);
+            return View(ticket); // W przypadku błędu zwróć widok z formularzem
         }
     }
 }
