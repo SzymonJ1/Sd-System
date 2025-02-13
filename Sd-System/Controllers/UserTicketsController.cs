@@ -7,7 +7,7 @@ using Sd_System.Models;
 
 namespace Sd_System.Controllers
 {
-    [Authorize(Roles = "User")]
+    [Authorize]
     public class UserTicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
