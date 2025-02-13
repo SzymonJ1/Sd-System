@@ -48,19 +48,20 @@ namespace Sd_System.Controllers
                 try
                 {
                     var existingTicket = await _context.Tickets.FindAsync(id);
-                    existingTicket.Title = ticket.Title;
-                    existingTicket.Description = ticket.Description;
+                    if (existingTicket == null) return NotFound();
+
+                    // Aktualizuj TYLKO Status i Priority
                     existingTicket.Status = ticket.Status;
                     existingTicket.Priority = ticket.Priority;
 
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!TicketExists(ticket.Id)) return NotFound();
                     throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(ticket);
         }
