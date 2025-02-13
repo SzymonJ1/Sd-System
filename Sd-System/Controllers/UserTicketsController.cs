@@ -7,7 +7,7 @@ using Sd_System.Models;
 
 namespace Sd_System.Controllers
 {
-    [Authorize] // Tylko zalogowani użytkownicy mogą korzystać z tego kontrolera
+    [Authorize(Roles = "User")]
     public class UserTicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -17,21 +17,21 @@ namespace Sd_System.Controllers
             _context = context;
         }
 
-        // GET: UserTickets/Index
+        // GET: UserTickets
         public async Task<IActionResult> Index()
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Pobierz ID zalogowanego użytkownika
-            var userTickets = await _context.Tickets
-                .Where(t => t.CreatedById == currentUserId) // Filtruj zgłoszenia tylko dla danego użytkownika
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var tickets = await _context.Tickets
+                .Where(t => t.CreatedById == userId)
                 .ToListAsync();
 
-            return View(userTickets); // Przekaż listę zgłoszeń do widoku
+            return View(tickets);
         }
 
         // GET: UserTickets/Create
         public IActionResult Create()
         {
-            return View(); // Zwróć widok do tworzenia nowego zgłoszenia
+            return View();
         }
 
         // POST: UserTickets/Create
@@ -43,28 +43,34 @@ namespace Sd_System.Controllers
             {
                 try
                 {
-                    ticket.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier); // Przypisz zgłoszenie do zalogowanego użytkownika
+                    // Dodaj ręczne uzupełnienie wszystkich pól
+                    ticket.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     ticket.CreatedDate = DateTime.Now;
                     ticket.Status = TicketStatus.New;
                     ticket.Priority = TicketPriority.P5;
+                    ticket.DueDate = null; // Explicitnie ustaw wartość
 
                     _context.Add(ticket);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index)); // Przekieruj do listy zgłoszeń po utworzeniu
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", $"Błąd zapisu: {ex.Message}");
+                    // Logowanie pełnego błędu
+                    Console.WriteLine($"BŁĄD: {ex.ToString()}");
+                    ModelState.AddModelError("", $"Błąd bazy danych: {ex.Message}");
+                }
+            }
+            else
+            {
+                // Wyświetl wszystkie błędy walidacji
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    ModelState.AddModelError("", error.ErrorMessage);
                 }
             }
 
-            // Logowanie błędów
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-                Console.WriteLine($"Błąd modelu: {error.ErrorMessage}");
-            }
-
-            return View(ticket); // W przypadku błędu zwróć widok z formularzem
+            return View(ticket);
         }
     }
 }
