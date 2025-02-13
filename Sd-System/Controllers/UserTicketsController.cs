@@ -39,16 +39,19 @@ namespace Sd_System.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Description")] Ticket ticket)
         {
+            // Wyłącz walidację dla pól CreatedById i CreatedBy
+            ModelState.Remove("CreatedById");
+            ModelState.Remove("CreatedBy");
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // Dodaj ręczne uzupełnienie wszystkich pól
+                    // Ręczne przypisanie wartości
                     ticket.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     ticket.CreatedDate = DateTime.Now;
                     ticket.Status = TicketStatus.New;
                     ticket.Priority = TicketPriority.P5;
-                    ticket.DueDate = null; // Explicitnie ustaw wartość
 
                     _context.Add(ticket);
                     await _context.SaveChangesAsync();
@@ -56,17 +59,7 @@ namespace Sd_System.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Logowanie pełnego błędu
-                    Console.WriteLine($"BŁĄD: {ex.ToString()}");
-                    ModelState.AddModelError("", $"Błąd bazy danych: {ex.Message}");
-                }
-            }
-            else
-            {
-                // Wyświetl wszystkie błędy walidacji
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    ModelState.AddModelError("", error.ErrorMessage);
+                    ModelState.AddModelError("", $"Błąd zapisu: {ex.Message}");
                 }
             }
 
