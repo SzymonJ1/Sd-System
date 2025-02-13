@@ -1,26 +1,37 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-<ul class="navbar-nav">
-    @if (SignInManager.IsSignedIn(User))
-    {
-        <li class="nav-item">
-            <span class="nav-link text-dark">Witaj, @User.Identity.Name!</span>
-        </li>
-        <li class="nav-item">
-            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home")">
-                <button type="submit" class="nav-link btn btn-link text-dark">Wyloguj</button>
-            </form>
-        </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Rejestracja</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Logowanie</a>
-        </li>
-    }
-</ul>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+       
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            
+
+            <ul class="navbar-nav ms-auto">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    var user = await UserManager.GetUserAsync(User);
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-2"></i>
+                            Witaj, @(user?.FirstName ?? user?.UserName)!
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home")">
+                                    <button type="submit" class="dropdown-item">Wyloguj</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</nav>

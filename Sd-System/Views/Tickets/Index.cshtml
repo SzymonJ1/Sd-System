@@ -13,6 +13,8 @@
                 <th>Status</th>
                 <th>Priorytet</th>
                 <th>Autor</th>
+                <th>Czas utworzenia</th>
+                <th>Czas do końca</th>
                 <th>Akcje</th>
             </tr>
         </thead>
@@ -22,18 +24,77 @@
                 <tr>
                     <td>@item.Title</td>
                     <td>
-                        <span class="badge @GetStatusBadge(item.Status)">
-                            @item.Status
-                        </span>
+                        @switch (item.Status)
+                        {
+                            case TicketStatus.New:
+                                <span class="badge bg-primary">Nowy</span>
+                                break;
+                            case TicketStatus.InProgress:
+                                <span class="badge bg-warning">W trakcie</span>
+                                break;
+                            case TicketStatus.Resolved:
+                                <span class="badge bg-success">Rozwiązany</span>
+                                break;
+                            case TicketStatus.Closed:
+                                <span class="badge bg-secondary">Zamknięty</span>
+                                break;
+                        }
                     </td>
                     <td>
-                        <span class="badge @GetPriorityBadge(item.Priority)">
-                            @item.Priority
-                        </span>
+                        @switch (item.Priority)
+                        {
+                            case TicketPriority.P1:
+                                <span class="badge bg-danger">P1 (24h)</span>
+                                break;
+                            case TicketPriority.P2:
+                                <span class="badge bg-warning">P2 (48h)</span>
+                                break;
+                            case TicketPriority.P3:
+                                <span class="badge bg-info">P3 (96h)</span>
+                                break;
+                            case TicketPriority.P4:
+                                <span class="badge bg-primary">P4 (240h)</span>
+                                break;
+                            case TicketPriority.P5:
+                                <span class="badge bg-light">P5 (bezterminowo)</span>
+                                break;
+                        }
                     </td>
                     <td>@item.CreatedBy?.FullName</td>
+                    <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edytuj</a>
+                        @if (item.Status == TicketStatus.Resolved || item.Status == TicketStatus.Closed)
+                        {
+                            <span class="text-success">
+                                Zakończono
+                            </span>
+                        }
+                        else
+                        {
+                            @if (item.DueDate.HasValue)
+                            {
+                                var timeLeft = item.DueDate.Value - DateTime.Now;
+                                if (timeLeft.TotalSeconds > 0)
+                                {
+                                    <span>@($"{timeLeft.Days}d {timeLeft.Hours}h")</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">Termin przekroczony!</span>
+                                }
+                            }
+                            else
+                            {
+                                <span>∞</span>
+                            }
+                        }
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <div class="d-flex gap-1">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm py-0">Edytuj</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info btn-sm py-0">Szczegóły</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm py-0">Usuń</a>
+                        </div>
                     </td>
                 </tr>
             }
@@ -42,28 +103,42 @@
 </div>
 
 @functions {
-    string GetStatusBadge(TicketStatus status)
+    string GetStatusClass(TicketStatus status)
     {
         return status switch
         {
-            TicketStatus.New => "bg-primary",
-            TicketStatus.InProgress => "bg-warning text-dark",
-            TicketStatus.Resolved => "bg-success",
-            TicketStatus.Closed => "bg-secondary",
-            _ => "bg-light"
+            TicketStatus.New => "status-new",
+            TicketStatus.InProgress => "status-inprogress",
+            TicketStatus.Resolved => "status-resolved",
+            TicketStatus.Closed => "status-closed",
+            _ => ""
         };
     }
 
-    string GetPriorityBadge(TicketPriority priority)
+    string GetPriorityClass(TicketPriority priority)
     {
         return priority switch
         {
-            TicketPriority.P1 => "bg-danger",
-            TicketPriority.P2 => "bg-warning",
-            TicketPriority.P3 => "bg-info",
-            TicketPriority.P4 => "bg-primary",
-            TicketPriority.P5 => "bg-light",
-            _ => "bg-light"
+            TicketPriority.P1 => "priority-p1",
+            TicketPriority.P2 => "priority-p2",
+            TicketPriority.P3 => "priority-p3",
+            TicketPriority.P4 => "priority-p4",
+            TicketPriority.P5 => "priority-p5",
+            _ => ""
         };
+    }
+
+    string FormatTimeLeft(TimeSpan timeLeft)
+    {
+        var days = timeLeft.Days;
+        var hours = timeLeft.Hours;
+
+        var result = new List<string>();
+        if (days > 0) result.Add($"{days} dni");
+        if (hours > 0) result.Add($"{hours} godzin");
+
+        return result.Count > 0
+            ? string.Join(", ", result)
+            : "Mniej niż 1 godzina";
     }
 }

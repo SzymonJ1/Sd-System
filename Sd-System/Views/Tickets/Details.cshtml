@@ -3,56 +3,93 @@
     ViewData["Title"] = "Szczegóły zgłoszenia";
 }
 
-<div class="card">
-    <div class="card-header">
-        <h4>@Model.Title</h4>
-    </div>
-    <div class="card-body">
-        <dl class="row">
-            <dt class="col-sm-3">Opis:</dt>
-            <dd class="col-sm-9">@Model.Description</dd>
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
 
-            <dt class="col-sm-3">Status:</dt>
-            <dd class="col-sm-9">
-                <span class="badge @GetStatusBadge(Model.Status)">
-                    @Model.Status
-                </span>
-            </dd>
+    <div class="card">
+        <div class="card-header">
+            <h4>@Model.Title</h4>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <!-- Sekcja podstawowych informacji -->
+                <dt class="col-sm-3">Status:</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @GetStatusClass(Model.Status)">
+                        @Model.Status
+                    </span>
+                </dd>
 
-            <dt class="col-sm-3">Priorytet:</dt>
-            <dd class="col-sm-9">
-                <span class="badge @GetPriorityBadge(Model.Priority)">
-                    @Model.Priority
-                </span>
-            </dd>
+                <dt class="col-sm-3">Priorytet:</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @GetPriorityClass(Model.Priority)">
+                        @Model.Priority
+                    </span>
+                </dd>
 
-            <dt class="col-sm-3">Data utworzenia:</dt>
-            <dd class="col-sm-9">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
+                <dt class="col-sm-3">Autor:</dt>
+                <dd class="col-sm-9">
+                    @Model.CreatedBy?.FullName
+                </dd>
 
-            <dt class="col-sm-3">Autor:</dt>
-            <dd class="col-sm-9">@Model.CreatedBy?.Email</dd>
-        </dl>
-    </div>
-    <div class="card-footer">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edytuj</a>
-        <a asp-action="Index" class="btn btn-secondary">Powrót</a>
+                <dt class="col-sm-3">Data utworzenia:</dt>
+                <dd class="col-sm-9">
+                    @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")
+                </dd>
+
+                <!-- Sekcja terminu -->
+                @if (Model.Status != TicketStatus.Closed && Model.Status != TicketStatus.Resolved)
+                {
+                    <dt class="col-sm-3">Czas do końca:</dt>
+                    <dd class="col-sm-9">
+                        @if (ViewBag.TimeLeft != null)
+                        {
+                            <span>@($"{ViewBag.TimeLeft.Days}d {ViewBag.TimeLeft.Hours}h")</span>
+                        }
+                        else
+                        {
+                            <span>Bezterminowe</span>
+                        }
+                    </dd>
+                }
+
+                <!-- Sekcja zakończenia -->
+                @if (Model.Status == TicketStatus.Closed || Model.Status == TicketStatus.Resolved)
+                {
+                    <dt class="col-sm-3">Data zakończenia:</dt>
+                    <dd class="col-sm-9">
+                        @Model.DueDate?.ToString("dd.MM.yyyy HH:mm")
+                    </dd>
+                }
+
+                <!-- Pełny opis -->
+                <dt class="col-sm-3">Opis:</dt>
+                <dd class="col-sm-9">
+                    <pre class="form-control-plaintext">@Model.Description</pre>
+                </dd>
+            </dl>
+        </div>
+        <div class="form-buttons">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm">Edytuj</a>
+            <a asp-action="Index" class="btn btn-secondary btn-sm">Powrót do listy</a>
+        </div>
     </div>
 </div>
 
 @functions {
-    string GetStatusBadge(TicketStatus status)
+    string GetStatusClass(TicketStatus status)
     {
         return status switch
         {
             TicketStatus.New => "bg-primary",
-            TicketStatus.InProgress => "bg-warning text-dark",
+            TicketStatus.InProgress => "bg-warning",
             TicketStatus.Resolved => "bg-success",
             TicketStatus.Closed => "bg-secondary",
-            _ => "bg-light"
+            _ => ""
         };
     }
 
-    string GetPriorityBadge(TicketPriority priority)
+    string GetPriorityClass(TicketPriority priority)
     {
         return priority switch
         {
@@ -61,7 +98,7 @@
             TicketPriority.P3 => "bg-info",
             TicketPriority.P4 => "bg-primary",
             TicketPriority.P5 => "bg-light",
-            _ => "bg-light"
+            _ => ""
         };
     }
 }

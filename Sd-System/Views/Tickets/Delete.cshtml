@@ -3,22 +3,37 @@
     ViewData["Title"] = "Usuń zgłoszenie";
 }
 
-<h2 class="text-danger">Czy na pewno chcesz usunąć to zgłoszenie?</h2>
+<div class="container mt-4">
+    <h3>Czy na pewno chcesz usunąć to zgłoszenie?</h3>
 
-<div class="alert alert-danger">
-    <h4>@Model.Title</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">Autor:</dt>
-        <dd class="col-sm-10">@Model.CreatedBy?.Email</dd>
+    <div class="alert alert-danger">
+        <h4>@Model.Title</h4>
+        <hr>
+        <dl class="row">
+            <dt class="col-sm-3">Autor:</dt>
+            <dd class="col-sm-9">
+                @if (Model.CreatedBy != null)
+                {
+                    @($"{Model.CreatedBy.FirstName} {Model.CreatedBy.LastName}")
+                }
+                else
+                {
+                    <span>Brak danych</span>
+                }
+            </dd>
 
-        <dt class="col-sm-2">Data utworzenia:</dt>
-        <dd class="col-sm-10">@Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")</dd>
-    </dl>
+            <dt class="col-sm-3">Data utworzenia:</dt>
+            <dd class="col-sm-9">
+                @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")
+            </dd>
+        </dl>
+    </div>
 
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <button type="submit" class="btn btn-danger">Usuń</button>
-        <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
-    </form>
+    <div class="form-buttons">
+        <form asp-action="Delete" class="d-inline">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger btn-sm">Potwierdź usunięcie</button>
+        </form>
+        <a asp-action="Index" class="btn btn-secondary btn-sm">Anuluj</a>
+    </div>
 </div>

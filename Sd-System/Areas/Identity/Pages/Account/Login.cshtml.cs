@@ -108,6 +108,8 @@ namespace Sd_System.Areas.Identity.Pages.Account
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
+
+
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout

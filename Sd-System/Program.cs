@@ -23,6 +23,25 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultUI()
 .AddDefaultTokenProviders();
 
+// Konfiguracja ciasteczek i sesji
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(20); // Sesja wygasa po 20 minutach
+    options.SlidingExpiration = true; // Odnawia czas przy aktywności
+    options.Cookie.IsEssential = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
+// Dodatkowa konfiguracja bezpieczeństwa sesji
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.FromSeconds(30); 
+});
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -37,6 +56,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -53,5 +73,4 @@ using (var scope = app.Services.CreateScope())
     await SeedData.Initialize(services);
 }
 
-// Uruchomienie aplikacji
 app.Run();
