@@ -1,15 +1,41 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Strona główna";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Witaj w systemie zgłoszeń</h1>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="mt-5">
+            @if (User.IsInRole("Admin"))
+            {
+                <h3>Jesteś zalogowany jako administrator</h3>
+                <a asp-controller="Tickets" asp-action="Index" class="btn btn-primary btn-lg">Zarządzaj zgłoszeniami</a>
+            }
+            else
+            {
+                <h3>Twoje zgłoszenia</h3>
+                <a asp-controller="UserTickets" asp-action="Index" class="btn btn-primary btn-lg">Przejdź do swoich zgłoszeń</a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="auth-box mt-5">
+            <h4 class="mb-4">Zaloguj się aby rozpocząć</h4>
+            <a href="/Identity/Account/Login" class="btn btn-primary btn-lg mx-2">Logowanie</a>
+            <a href="/Identity/Account/Register" class="btn btn-outline-secondary btn-lg mx-2">Rejestracja</a>
+        </div>
+    }
 </div>
-@if (!User.Identity.IsAuthenticated)
-{
-    <div class="auth-box">
-        <a href="/Identity/Account/Login" class="btn btn-primary">Logowanie</a>
-        <a href="/Identity/Account/Register" class="btn btn-secondary">Rejestracja</a>
-    </div>
-}
+
+<style>
+    .auth-box {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 2rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+    }
+</style>

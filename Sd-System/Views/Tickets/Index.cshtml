@@ -1,47 +1,37 @@
 ﻿@model IEnumerable<Sd_System.Models.Ticket>
-
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista zgłoszeń";
 }
 
-<h1>Index</h1>
+<h1>Zgłoszenia</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<table class="table table-hover">
+    <thead class="table-dark">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedBy)
-            </th>
-            <th></th>
+            <th>Tytuł</th>
+            <th>Status</th>
+            <th>Priorytet</th>
+            <th>Termin</th>
+            <th>Data utworzenia</th>
+            <th>Autor</th>
+            <th>Akcje</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <td>
+                    <span class="badge @GetStatusBadge(item.Status)">
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </span>
+                </td>
+                <td>
+                    <span class="badge @GetPriorityBadge(item.Priority)">
+                        @Html.DisplayFor(modelItem => item.Priority)
+                    </span>
+                </td>
                 <td>
                     @if (item.DueDate.HasValue)
                     {
@@ -49,21 +39,43 @@
                     }
                     else
                     {
-                        <span>Bezterminowe</span>
+                        <span>Brak terminu</span>
                     }
                 </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedBy.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+                <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@item.CreatedBy?.Email</td>
+                <td>
+                    <div class="btn-group">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edytuj</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Szczegóły</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Usuń</a>
+                    </div>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@functions {
+    string GetStatusBadge(TicketStatus status)
+    {
+        return status switch
+        {
+            TicketStatus.New => "bg-primary",
+            TicketStatus.InProgress => "bg-warning text-dark",
+            TicketStatus.Resolved => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+
+    string GetPriorityBadge(TicketPriority priority)
+    {
+        return priority switch
+        {
+            TicketPriority.P1 => "bg-info",
+            TicketPriority.P2 => "bg-warning",
+            TicketPriority.P3 => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
