@@ -1,60 +1,45 @@
 ﻿@model IEnumerable<Sd_System.Models.Ticket>
 @{
-    ViewData["Title"] = "Lista zgłoszeń";
+    ViewData["Title"] = "Wszystkie zgłoszenia";
 }
 
-<h1>Zgłoszenia</h1>
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
 
-<table class="table table-hover">
-    <thead class="table-dark">
-        <tr>
-            <th>Tytuł</th>
-            <th>Status</th>
-            <th>Priorytet</th>
-            <th>Termin</th>
-            <th>Data utworzenia</th>
-            <th>Autor</th>
-            <th>Akcje</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+    <table class="table table-hover">
+        <thead class="table-dark">
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.Title)</td>
-                <td>
-                    <span class="badge @GetStatusBadge(item.Status)">
-                        @Html.DisplayFor(modelItem => item.Status)
-                    </span>
-                </td>
-                <td>
-                    <span class="badge @GetPriorityBadge(item.Priority)">
-                        @Html.DisplayFor(modelItem => item.Priority)
-                    </span>
-                </td>
-                <td>
-                    @if (item.DueDate.HasValue)
-                    {
-                        @item.DueDate.Value.ToString("dd.MM.yyyy HH:mm")
-                    }
-                    else
-                    {
-                        <span>Brak terminu</span>
-                    }
-                </td>
-                <td>@item.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
-                <td>@item.CreatedBy?.Email</td>
-                <td>
-                    <div class="btn-group">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edytuj</a>
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Szczegóły</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Usuń</a>
-                    </div>
-                </td>
+                <th>Tytuł</th>
+                <th>Status</th>
+                <th>Priorytet</th>
+                <th>Autor</th>
+                <th>Akcje</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>
+                        <span class="badge @GetStatusBadge(item.Status)">
+                            @item.Status
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge @GetPriorityBadge(item.Priority)">
+                            @item.Priority
+                        </span>
+                    </td>
+                    <td>@item.CreatedBy?.FullName</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">Edytuj</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 @functions {
     string GetStatusBadge(TicketStatus status)
@@ -64,7 +49,8 @@
             TicketStatus.New => "bg-primary",
             TicketStatus.InProgress => "bg-warning text-dark",
             TicketStatus.Resolved => "bg-success",
-            _ => "bg-secondary"
+            TicketStatus.Closed => "bg-secondary",
+            _ => "bg-light"
         };
     }
 
@@ -72,10 +58,12 @@
     {
         return priority switch
         {
-            TicketPriority.P1 => "bg-info",
+            TicketPriority.P1 => "bg-danger",
             TicketPriority.P2 => "bg-warning",
-            TicketPriority.P3 => "bg-danger",
-            _ => "bg-secondary"
+            TicketPriority.P3 => "bg-info",
+            TicketPriority.P4 => "bg-primary",
+            TicketPriority.P5 => "bg-light",
+            _ => "bg-light"
         };
     }
 }
