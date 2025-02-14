@@ -1,66 +1,68 @@
 /* site.css */
-
-/* Global Styles */
+/* ========== GLOBALNE STYLE ========== */
 html, body {
-    height: 100%; /* Upewnij siê, ¿e strona zajmuje ca³¹ wysokoœæ okna */
+    height: 100%;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
+    font-family: 'Roboto', sans-serif;
 }
 
 body {
-    font-family: 'Roboto', sans-serif; /* Zmieniono czcionkê */
     background-color: #f8f9fa;
     color: #343a40;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Upewnij siê, ¿e body zajmuje ca³¹ wysokoœæ widoku */
 }
 
-h1.display-4 {
-    margin-top: 20px;
-    font-weight: 300;
-    font-family: 'Roboto', sans-serif; /* Zmieniono czcionkê */
-}
-
-/* Navigation Styles */
+/* ========== NAWIGACJA ========== */
 .navbar {
     padding: 0.5rem 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .navbar-brand {
     font-weight: 500;
+    font-size: 1.1rem;
 }
 
 .nav-link {
     padding: 0.5rem 1rem !important;
     display: flex;
     align-items: center;
+    font-size: 0.9rem;
 }
 
-
-    .navbar-brand:hover, .nav-link:hover {
+    .navbar-brand:hover,
+    .nav-link:hover {
         color: #ffc107 !important;
     }
 
-/* Main Container Styles */
-.container {
-    flex: 1; /* Rozci¹ga kontener, aby wype³niæ dostêpn¹ przestrzeñ */
-    padding: 20px; /* Dodaj odstêp, aby treœæ nie dotyka³a krawêdzi */
+/* ========== PRZYCISKI ========== */
+.btn {
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 0.3rem;
 }
 
-/* Home Page Styles */
-.user-actions {
-    margin-top: 30px;
+/* Bazowy rozmiar przycisków */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem !important;
+    line-height: 1.2;
+    height: 26px;
 }
 
-.coordinator-actions {
-    margin-top: 30px;
-    border-top: 1px solid #dee2e6;
-    padding-top: 20px;
-}
+    .btn-sm .bi {
+        font-size: 0.8rem !important;
+        margin-top: -1px;
+    }
 
+/* Specjalne warianty */
 .btn-primary {
     background-color: #007bff;
     border-color: #007bff;
@@ -81,200 +83,163 @@ h1.display-4 {
         border-color: #545b62;
     }
 
-/* Footer Styles */
+/* ========== TABELE ========== */
+.table {
+    margin: 1rem 0;
+    background-color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.table td, .table th {
+    vertical-align: middle !important;
+    padding: 0.75rem;
+}
+
+/* Akcje w tabeli */
+.table .btn-sm {
+    min-width: 70px;
+    padding: 0.2rem 0.4rem;
+    border-width: 1px;
+}
+
+/* ========== FORULARZE ========== */
+.form-control,
+.form-select {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 0.3rem;
+}
+
+.form-select-sm {
+    padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    background-size: 12px 12px;
+}
+
+.input-group-sm {
+    gap: 0.25rem;
+}
+
+/* ========== STATUSY I PRIORYTETY ========== */
+.status-pill,
+.priority-pill {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 500;
+    line-height: 1;
+    border-radius: 1rem;
+}
+
+/* Kolory statusów */
+.status-new {
+    background-color: rgba(13, 110, 253, 0.1);
+    border: 1px solid #0d6efd;
+    color: #0d6efd;
+}
+
+.status-inprogress {
+    background-color: rgba(255, 193, 7, 0.1);
+    border: 1px solid #ffc107;
+    color: #ffc107;
+}
+
+.status-resolved {
+    background-color: rgba(25, 135, 84, 0.1);
+    border: 1px solid #198754;
+    color: #198754;
+}
+
+.status-closed {
+    background-color: rgba(108, 117, 125, 0.1);
+    border: 1px solid #6c757d;
+    color: #6c757d;
+}
+
+/* Kolory priorytetów */
+.priority-p1 {
+    background-color: rgba(220, 53, 69, 0.1);
+    border: 1px solid #dc3545;
+    color: #dc3545;
+}
+
+.priority-p2 {
+    background-color: rgba(253, 126, 20, 0.1);
+    border: 1px solid #fd7e14;
+    color: #fd7e14;
+}
+
+.priority-p3 {
+    background-color: rgba(13, 202, 240, 0.1);
+    border: 1px solid #0dcaf0;
+    color: #0dcaf0;
+}
+
+.priority-p4 {
+    background-color: rgba(102, 16, 242, 0.1);
+    border: 1px solid #6610f2;
+    color: #6610f2;
+}
+
+.priority-p5 {
+    background-color: rgba(173, 181, 189, 0.1);
+    border: 1px solid #adb5bd;
+    color: #adb5bd;
+}
+
+/* ========== KARTY I KONTENERY ========== */
+.card {
+    border-radius: 0.5rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.auth-box {
+    max-width: 400px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ========== STOPKA ========== */
 .footer {
     background-color: #343a40;
-    color: #ffffff;
-    padding: 10px 0;
-    text-align: center;
-    border-top: 1px solid;
-    margin-top: auto; /* Przypina stopkê do do³u */
+    color: white;
+    padding: 1rem 0;
+    margin-top: auto;
+    border-top: 1px solid rgba(255,255,255,0.1);
 }
 
     .footer a {
         color: #ffc107;
+        text-decoration: none;
     }
 
         .footer a:hover {
-            color: #ffffff;
+            color: white;
         }
 
-.status-pill, .priority-pill {
-    display: inline-block;
-    padding: 0.35em 0.65em;
-    font-size: 0.875em;
-    font-weight: 500;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    border-radius: 1rem;
-    transition: all 0.15s ease;
-}
-
-/* Kolory dla statusów */
-.status-new {
-    border: 1px solid #0d6efd;
-    color: #0d6efd;
-    background-color: rgba(13, 110, 253, 0.1);
-}
-
-.status-inprogress {
-    border: 1px solid #ffc107;
-    color: #ffc107;
-    background-color: rgba(255, 193, 7, 0.1);
-}
-
-.status-resolved {
-    border: 1px solid #198754;
-    color: #198754;
-    background-color: rgba(25, 135, 84, 0.1);
-}
-
-.status-closed {
-    border: 1px solid #6c757d;
-    color: #6c757d;
-    background-color: rgba(108, 117, 125, 0.1);
-}
-
-/* Kolory dla priorytetów */
-.priority-p1 {
-    border: 1px solid #dc3545;
-    color: #dc3545;
-    background-color: rgba(220, 53, 69, 0.1);
-}
-
-.priority-p2 {
-    border: 1px solid #fd7e14;
-    color: #fd7e14;
-    background-color: rgba(253, 126, 20, 0.1);
-}
-
-.priority-p3 {
-    border: 1px solid #0dcaf0;
-    color: #0dcaf0;
-    background-color: rgba(13, 202, 240, 0.1);
-}
-
-.priority-p4 {
-    border: 1px solid #6610f2;
-    color: #6610f2;
-    background-color: rgba(102, 16, 242, 0.1);
-}
-
-.priority-p5 {
-    border: 1px solid #adb5bd;
-    color: #adb5bd;
-    background-color: rgba(173, 181, 189, 0.1);
-}
-pre {
-    white-space: pre-wrap; /* Zachowuj formatowanie, ale zawijaj tekst */
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 0.25rem;
-}
-
-.card {
-    border-radius: 15px;
-    border: none;
-}
-
-.btn {
-    transition: all 0.3s ease;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    height: 100px; /* Sta³a wysokoœæ przycisków */
-}
-
-    .btn i {
-        font-size: 1.3rem;
+/* ========== RESPONSYWNO?? ========== */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1rem;
     }
 
-.auth-box {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 2rem;
-    border: 1px solid #dee2e6;
-    border-radius: 0.5rem;
-}
-
-.admin-panel {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.btn-lg {
-    min-height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.bi {
-    font-size: 1.2rem;
-}
-
-.dropdown-menu {
-    min-width: 150px;
-}
-.table .btn-sm {
-    padding: 0.1rem 0.4rem; /* Mniejszy padding pionowy */
-    font-size: 0.7rem; /* Mniejsza czcionka */
-    line-height: 1.2; /* Zwarty uk³ad tekstu */
-    min-width: 60px; /* Mniejsza minimalna szerokoœæ */
-    border-width: 1px; /* Cieñszy border */
-    height: 22px; /* Sta³a wysokoœæ */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.table td {
-    vertical-align: middle !important;
-}
-
-    .table .btn-sm.py-0 {
-        padding-top: 0;
-        padding-bottom: 0;
+    .nav-link {
+        font-size: 0.8rem;
+        padding: 0.5rem !important;
     }
-.form-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-}
 
-    .form-buttons .btn {
-        flex: 1; /* Równe szerokoœci */
-        min-height: 38px; /* Sta³a wysokoœæ */
-        padding: 0.25rem 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .btn-sm {
+        font-size: 0.7rem !important;
+        padding: 0.2rem 0.4rem;
     }
-.table-hover tbody tr:hover {
-    background-color: rgba(0, 0, 0, 0.04);
-}
-
-.badge {
-    padding: 0.5em 0.75em;
-    font-size: 0.875em;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-}
-
-.form-select {
-    min-width: 160px;
-}
-
-.btn {
-    transition: all 0.2s ease;
-}
-
-.bi {
-    vertical-align: middle;
-    margin-right: 0.3rem;
 }
