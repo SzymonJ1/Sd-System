@@ -32,11 +32,24 @@
             }
             else
             {
-                <h3>Twoje zgłoszenia</h3>
-                <a asp-controller="UserTickets" asp-action="Index"
-                   class="btn btn-primary btn-lg">
-                    Przejdź do swoich zgłoszeń
-                </a>
+                <div class="user-panel">
+                    <div class="row justify-content-center g-3">
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <a asp-controller="UserTickets" asp-action="Create"
+                               class="btn btn-success btn-md w-100 py-2">
+                                <i class="bi bi-plus-circle"></i>
+                                Utwórz nowe zgłoszenie
+                            </a>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <a asp-controller="UserTickets" asp-action="Index"
+                               class="btn btn-primary btn-md w-100 py-2">
+                                <i class="bi bi-list-ul"></i>
+                                Przeglądaj zgłoszenia
+                            </a>
+                        </div>
+                    </div>
+                </div>
             }
         </div>
     }
@@ -47,13 +60,30 @@
             <div class="d-flex gap-2 justify-content-center">
                 <a href="/Identity/Account/Login"
                    class="btn btn-primary btn-lg px-4">
+                    <i class="bi bi-box-arrow-in-right"></i>
                     Logowanie
                 </a>
                 <a href="/Identity/Account/Register"
                    class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="bi bi-person-plus"></i>
                     Rejestracja
                 </a>
             </div>
         </div>
     }
 </div>
+
+<style>
+    .user-panel .btn, .admin-panel .btn {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .user-panel .btn:hover, .admin-panel .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+    .bi {
+        margin-right: 8px;
+    }
+</style>
