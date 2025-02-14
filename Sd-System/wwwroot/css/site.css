@@ -125,6 +125,11 @@ body {
 .input-group-sm {
     gap: 0.25rem;
 }
+form .btn-lg.w-100 {
+    display: block;
+    max-width: 300px; /* Dostosuj szerokoœæ przycisku */
+    margin: 0 auto; /* Automatyczne marginesy boczne -> centrowanie */
+}
 
 /* ========== STATUSY I PRIORYTETY ========== */
 .status-pill,
