@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Sd_System.Data;
 using Sd_System.Models;
 using System;
-using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sd_System.Controllers
@@ -14,25 +13,43 @@ namespace Sd_System.Controllers
     public class TicketsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly ILogger<TicketsController> _logger;
 
-        public TicketsController(
-            ApplicationDbContext context,
-            ILogger<TicketsController> logger)
+        public TicketsController(ApplicationDbContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
-        // GET: Tickets
-        public async Task<IActionResult> Index()
-        {
-            var activeTickets = await _context.Tickets
-         .Include(t => t.CreatedBy)
-         .Where(t => t.Status != TicketStatus.Closed)
-         .ToListAsync();
+        // Usunięto pierwszą metodę Index()
+        // Zastąpiono jedną metodą z parametrami opcjonalnymi
 
-            return View(activeTickets);
+        public async Task<IActionResult> Index(
+            string sortOrder = "date_desc",
+            string priorityFilter = "")
+        {
+            ViewData["DateSortParam"] = sortOrder == "date_asc" ? "date_desc" : "date_asc";
+            ViewData["CurrentPriorityFilter"] = priorityFilter;
+
+            var tickets = _context.Tickets
+                .Include(t => t.CreatedBy)
+                .Where(t => t.Status != TicketStatus.Closed)
+                .AsQueryable();
+
+            // Filtrowanie
+            if (!string.IsNullOrEmpty(priorityFilter))
+            {
+                var priority = Enum.Parse<TicketPriority>(priorityFilter);
+                tickets = tickets.Where(t => t.Priority == priority);
+            }
+
+            // Sortowanie
+            tickets = sortOrder switch
+            {
+                "date_asc" => tickets.OrderBy(t => t.CreatedDate),
+                "date_desc" => tickets.OrderByDescending(t => t.CreatedDate),
+                _ => tickets.OrderByDescending(t => t.CreatedDate)
+            };
+
+            return View(await tickets.ToListAsync());
         }
 
         // GET: Tickets/Edit/5

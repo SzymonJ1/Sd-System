@@ -4,36 +4,107 @@
     ViewData["Title"] = "Moje Zgłoszenia";
 }
 
-<h1>Moje Zgłoszenia</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
 
+        <div class="d-flex gap-2">
+            <a asp-action="Create" class="btn btn-success">
+                <i class="bi bi-plus-lg"></i> Nowe zgłoszenie
+            </a>
 
+            <form asp-action="Index" method="get" class="row g-2">
+                <div class="col-auto">
+                    <select name="priorityFilter" class="form-select"
+                            asp-items="Html.GetEnumSelectList<TicketPriority>()">
+                        <option value="">Wszystkie</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel"></i>
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Tytuł</th>
-            <th>Opis</th>
-            <th>Status</th>
-            <th>Priorytet</th>
-            <th>Data utworzenia</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var ticket in Model)
-        {
-            <tr>
-                <td>@ticket.Title</td>
-                <td>@ticket.Description</td>
-                <td>@ticket.Status</td>
-                <td>@ticket.Priority</td>
-                <td>@ticket.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<div class="mb-4">
-    <button asp-action="Create" class="btn btn-success btn-lg px-4 py-2">
-        <i class="bi bi-plus-circle"></i> Utwórz zgłoszenie
-    </button>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Tytuł</th>
+                    <th>Opis</th>
+                    <th>Status</th>
+                    <th>Priorytet</th>
+                    <th>
+                        <a href="@Url.Action("Index", new {
+                            sortOrder = ViewData["DateSortParam"],
+                            priorityFilter = ViewData["PriorityFilter"]
+                        })">
+                            Data utworzenia
+                            @if (ViewData["DateSortParam"]?.ToString() == "date_desc")
+                            {
+                                <i class="bi bi-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-sort-up"></i>
+                            }
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ticket in Model)
+                {
+                    <tr>
+                        <td>@ticket.Title</td>
+                        <td>@ticket.Description</td>
+                        <td>
+                            <span class="badge @GetStatusClass(ticket.Status)">
+                                @ticket.Status
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge @GetPriorityClass(ticket.Priority)">
+                                @ticket.Priority
+                            </span>
+                        </td>
+                        <td>@ticket.CreatedDate.ToString("dd.MM.yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
+
+@functions {
+    string GetStatusClass(TicketStatus status)
+    {
+        return status switch
+        {
+            TicketStatus.New => "bg-primary",
+            TicketStatus.InProgress => "bg-warning",
+            TicketStatus.Resolved => "bg-success",
+            TicketStatus.Closed => "bg-secondary",
+            _ => "bg-light"
+        };
+    }
+
+    string GetPriorityClass(TicketPriority priority)
+    {
+        return priority switch
+        {
+            TicketPriority.P1 => "bg-danger",
+            TicketPriority.P2 => "bg-warning",
+            TicketPriority.P3 => "bg-info",
+            TicketPriority.P4 => "bg-primary",
+            TicketPriority.P5 => "bg-light text-dark",
+            _ => "bg-light"
+        };
+    }
+}

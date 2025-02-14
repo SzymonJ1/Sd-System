@@ -255,3 +255,26 @@ pre {
         align-items: center;
         justify-content: center;
     }
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+}
+
+.badge {
+    padding: 0.5em 0.75em;
+    font-size: 0.875em;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.form-select {
+    min-width: 160px;
+}
+
+.btn {
+    transition: all 0.2s ease;
+}
+
+.bi {
+    vertical-align: middle;
+    margin-right: 0.3rem;
+}

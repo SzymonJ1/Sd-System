@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sd_System.Data;
 using Sd_System.Models;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sd_System.Controllers
 {
@@ -17,15 +19,35 @@ namespace Sd_System.Controllers
             _context = context;
         }
 
-        // GET: UserTickets
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(
+            string sortOrder = "date_desc",
+            string priorityFilter = "")
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var tickets = await _context.Tickets
-                .Where(t => t.CreatedById == userId)
-                .ToListAsync();
+            ViewData["DateSortParam"] = sortOrder == "date_asc" ? "date_desc" : "date_asc";
+            ViewData["CurrentPriorityFilter"] = priorityFilter;
 
-            return View(tickets);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var tickets = _context.Tickets
+                .Where(t => t.CreatedById == userId)
+                .AsQueryable();
+
+            // Filtrowanie
+            if (!string.IsNullOrEmpty(priorityFilter))
+            {
+                var priority = Enum.Parse<TicketPriority>(priorityFilter);
+                tickets = tickets.Where(t => t.Priority == priority);
+            }
+
+            // Sortowanie
+            tickets = sortOrder switch
+            {
+                "date_asc" => tickets.OrderBy(t => t.CreatedDate),
+                "date_desc" => tickets.OrderByDescending(t => t.CreatedDate),
+                _ => tickets.OrderByDescending(t => t.CreatedDate)
+            };
+
+            return View(await tickets.ToListAsync());
         }
 
         // GET: UserTickets/Create

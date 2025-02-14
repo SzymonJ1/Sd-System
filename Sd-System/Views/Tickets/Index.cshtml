@@ -4,20 +4,53 @@
 }
 
 <div class="container mt-4">
-    <h2>@ViewData["Title"]</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@ViewData["Title"]</h2>
 
-    <table class="table table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>Tytuł</th>
-                <th>Status</th>
-                <th>Priorytet</th>
-                <th>Autor</th>
-                <th>Czas utworzenia</th>
-                <th>Czas do końca</th>
-                <th>Akcje</th>
-            </tr>
-        </thead>
+        <form asp-action="Index" method="get" class="row g-2">
+            <div class="col-auto">
+                <select name="priorityFilter" class="form-select"
+                        asp-items="Html.GetEnumSelectList<TicketPriority>()">
+                    <option value="">Wszystkie priorytety</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-funnel"></i> Filtruj
+                </button>
+                <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Tytuł</th>
+                    <th>Status</th>
+                    <th>Priorytet</th>
+                    <th>Autor</th>
+                    <th>
+                        <a asp-action="Index"
+                           asp-route-sortOrder="@ViewData["DateSortParam"]"
+                           asp-route-priorityFilter="@ViewData["CurrentPriorityFilter"]">
+                            Data utworzenia
+                            @if (ViewData["DateSortParam"]?.ToString() == "date_asc")
+                            {
+                                <i class="bi bi-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-sort-down-alt"></i>
+                            }
+                        </a>
+                    </th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
         <tbody>
             @foreach (var item in Model)
             {
