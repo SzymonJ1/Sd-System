@@ -4,33 +4,31 @@
     ViewData["Title"] = "Moje Zgłoszenia";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>@ViewData["Title"]</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h4">@ViewData["Title"]</h1>
 
-        <div class="d-flex gap-2">
-            <a asp-action="Create" class="btn btn-success">
-                <i class="bi bi-plus-lg"></i> Nowe zgłoszenie
+    <div class="d-flex gap-1 align-items-center">
+        <a asp-action="Create" class="btn btn-success btn-sm">
+            <i class="bi bi-plus-circle me-1"></i>
+            <span>Nowe zgłoszenie</span>
+        </a>
+
+        <form asp-action="Index" method="get" class="input-group input-group-sm">
+            <select class="form-select form-select-sm"
+                    name="priorityFilter"
+                    style="width: 120px;"
+                    asp-items="Html.GetEnumSelectList<TicketPriority>()">
+                <option value="">Wszystkie</option>
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="bi bi-funnel"></i>
+            </button>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-counterclockwise"></i>
             </a>
-
-            <form asp-action="Index" method="get" class="row g-2">
-                <div class="col-auto">
-                    <select name="priorityFilter" class="form-select"
-                            asp-items="Html.GetEnumSelectList<TicketPriority>()">
-                        <option value="">Wszystkie</option>
-                    </select>
-                </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-funnel"></i>
-                    </button>
-                    <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
-                        <i class="bi bi-arrow-clockwise"></i>
-                    </a>
-                </div>
-            </form>
-        </div>
+        </form>
     </div>
+</div>
 
     <div class="table-responsive">
         <table class="table table-hover align-middle">
