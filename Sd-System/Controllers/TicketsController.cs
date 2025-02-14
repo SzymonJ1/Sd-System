@@ -29,7 +29,7 @@ namespace Sd_System.Controllers
         {
             var activeTickets = await _context.Tickets
          .Include(t => t.CreatedBy)
-         .Where(t => t.Status != TicketStatus.Closed) // Pokazuj tylko niezamknięte
+         .Where(t => t.Status != TicketStatus.Closed)
          .ToListAsync();
 
             return View(activeTickets);
@@ -56,7 +56,7 @@ namespace Sd_System.Controllers
         {
             if (id != ticket.Id) return NotFound();
 
-            // Ręczna walidacja wymaganych płów
+
             if (string.IsNullOrEmpty(ticket.Title) ||
                 string.IsNullOrEmpty(ticket.Description) ||
                 ticket.CreatedById == null)
@@ -79,11 +79,11 @@ namespace Sd_System.Controllers
                 var existingTicket = await _context.Tickets.FindAsync(id);
                 if (existingTicket == null) return NotFound();
 
-                // Aktualizuj tylko dozwolone pola
+
                 existingTicket.Status = ticket.Status;
                 existingTicket.Priority = ticket.Priority;
 
-                // Oblicz nowy termin
+
                 existingTicket.DueDate = ticket.Priority != TicketPriority.P5
                     ? existingTicket.CreatedDate.AddHours((int)ticket.Priority)
                     : null;
@@ -123,7 +123,7 @@ namespace Sd_System.Controllers
             }
 
             var ticket = await _context.Tickets
-                .Include(t => t.CreatedBy) // Dodaj to include
+                .Include(t => t.CreatedBy) 
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (ticket == null)
@@ -140,7 +140,7 @@ namespace Sd_System.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var ticket = await _context.Tickets.FindAsync(id);
-            _context.Tickets.Remove(ticket); // Fizyczne usunięcie z bazy
+            _context.Tickets.Remove(ticket); 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -153,7 +153,7 @@ namespace Sd_System.Controllers
             }
 
             var ticket = await _context.Tickets
-                .Include(t => t.CreatedBy) // Ładuj dane autora
+                .Include(t => t.CreatedBy) 
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (ticket == null)

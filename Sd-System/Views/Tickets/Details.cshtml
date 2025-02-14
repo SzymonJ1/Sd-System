@@ -12,7 +12,6 @@
         </div>
         <div class="card-body">
             <dl class="row">
-                <!-- Sekcja podstawowych informacji -->
                 <dt class="col-sm-3">Status:</dt>
                 <dd class="col-sm-9">
                     <span class="badge @GetStatusClass(Model.Status)">
@@ -37,7 +36,6 @@
                     @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")
                 </dd>
 
-                <!-- Sekcja terminu -->
                 @if (Model.Status != TicketStatus.Closed && Model.Status != TicketStatus.Resolved)
                 {
                     <dt class="col-sm-3">Czas do końca:</dt>
@@ -53,7 +51,6 @@
                     </dd>
                 }
 
-                <!-- Sekcja zakończenia -->
                 @if (Model.Status == TicketStatus.Closed || Model.Status == TicketStatus.Resolved)
                 {
                     <dt class="col-sm-3">Data zakończenia:</dt>
@@ -62,7 +59,6 @@
                     </dd>
                 }
 
-                <!-- Pełny opis -->
                 <dt class="col-sm-3">Opis:</dt>
                 <dd class="col-sm-9">
                     <pre class="form-control-plaintext">@Model.Description</pre>
@@ -97,7 +93,7 @@
             TicketPriority.P2 => "bg-warning",
             TicketPriority.P3 => "bg-info",
             TicketPriority.P4 => "bg-primary",
-            TicketPriority.P5 => "bg-light",
+            TicketPriority.P5 => "bg-success",
             _ => ""
         };
     }

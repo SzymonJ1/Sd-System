@@ -39,7 +39,7 @@ namespace Sd_System.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Title,Description")] Ticket ticket)
         {
-            // Wyłącz walidację dla pól CreatedById i CreatedBy
+            
             ModelState.Remove("CreatedById");
             ModelState.Remove("CreatedBy");
 
@@ -47,7 +47,7 @@ namespace Sd_System.Controllers
             {
                 try
                 {
-                    // Ręczne przypisanie wartości
+                    
                     ticket.CreatedById = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     ticket.CreatedDate = DateTime.Now;
                     ticket.Status = TicketStatus.New;

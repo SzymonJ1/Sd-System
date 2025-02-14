@@ -14,7 +14,6 @@ namespace Sd_System.Data
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                // Stwórz role "Admin" i "User", jeśli nie istnieją
                 string[] roles = { "Admin", "User" };
                 foreach (var role in roles)
                 {
@@ -24,7 +23,6 @@ namespace Sd_System.Data
                     }
                 }
 
-                // Stwórz konto admina, jeśli nie istnieje
                 var adminEmail = "admin@example.com";
                 var adminUser = await userManager.FindByEmailAsync(adminEmail);
                 if (adminUser == null)
@@ -35,10 +33,9 @@ namespace Sd_System.Data
                         Email = adminEmail,
                         FirstName = "Admin",
                         LastName = "System",
-                        EmailConfirmed = true // Pominięcie potwierdzenia email
+                        EmailConfirmed = true 
                     };
 
-                    // Hasło musi spełniać wymagania (np. duże litery, cyfry)
                     var result = await userManager.CreateAsync(adminUser, "Admin123!");
                     if (result.Succeeded)
                     {
@@ -46,7 +43,6 @@ namespace Sd_System.Data
                     }
                     else
                     {
-                        // Logowanie błędów (np. do konsoli)
                         Console.WriteLine("Błąd podczas tworzenia admina:");
                         foreach (var error in result.Errors)
                         {
@@ -55,7 +51,6 @@ namespace Sd_System.Data
                     }
                 }
 
-                // Zastosuj migracje (na wypadek, gdyby baza nie istniała)
                 await context.Database.MigrateAsync();
             }
         }
